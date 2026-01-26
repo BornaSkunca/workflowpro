@@ -55,4 +55,9 @@ public class UserService {
         return passwordEncoder.matches(rawPassword, user.getPassword());
     }
 
+    public User findByUsername(String username){
+        return userRepository.findByUsername(username)
+        .orElseThrow(()->new RuntimeException("User not found!"));
+    }
+
 }

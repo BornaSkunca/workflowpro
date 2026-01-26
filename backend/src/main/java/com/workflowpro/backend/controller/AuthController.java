@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.workflowpro.backend.dto.LoginRequest;
 import com.workflowpro.backend.dto.LoginResponse;
+import com.workflowpro.backend.model.User;
+import com.workflowpro.backend.security.JwtUtil;
 import com.workflowpro.backend.service.UserService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,9 +18,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 @CrossOrigin(origins = "*")
 public class AuthController {
     private final UserService userService;
+    private final JwtUtil jwtUtil;
 
-    public AuthController(UserService userService){
+    public AuthController(UserService userService,JwtUtil jwtUtil){
         this.userService=userService;
+        this.jwtUtil=jwtUtil;
     }
 
     @PostMapping("/login")
@@ -29,7 +33,10 @@ public class AuthController {
             throw new RuntimeException("Invalid username or password!");
         }
 
-        return new LoginResponse("Login successful!");
+        User user=userService.findByUsername(request.getUsername());
+        String token= jwtUtil.generateToken(user.getUsername(), user.getRole().getName());
+
+        return new LoginResponse(token);
     }
     
 }
