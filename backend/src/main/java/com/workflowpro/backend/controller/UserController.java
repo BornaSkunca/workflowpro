@@ -2,6 +2,7 @@ package com.workflowpro.backend.controller;
 
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,11 +31,13 @@ public class UserController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public UserResponse createUser(@Valid @RequestBody CreateUserRequest request){
         return userService.createUser(request.getUsername(), request.getEmail(), request.getPassword(), request.getRole());
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getAllUsers(){
         return userService.getAllUsers();
     }
