@@ -1,11 +1,13 @@
 package com.workflowpro.backend.service;
 
+import org.springframework.security.access.AccessDeniedException;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import com.workflowpro.backend.dto.CreateTaskRequest;
 import com.workflowpro.backend.dto.TaskResponse;
+import com.workflowpro.backend.dto.UpdateTaskRequest;
 import com.workflowpro.backend.model.Project;
 import com.workflowpro.backend.model.Task;
 import com.workflowpro.backend.model.TaskStatus;
@@ -65,5 +67,44 @@ public class TaskService {
          task.getAssignedTo() != null ? task.getAssignedTo().getUsername():null,
           task.getDueDate());
     }
+
+    public TaskResponse updateTask(Long taskId, UpdateTaskRequest request, 
+        String username, boolean isAdminOrManager ){
+            Task task= taskRepository.findById(taskId)
+            .orElseThrow(()->new RuntimeException("Task not found!"));
+
+            if(!isAdminOrManager){
+                if(task.getAssignedTo()==null||
+                !task.getAssignedTo().getUsername().equals(username)){
+                    throw new AccessDeniedException("You are not allowed to update this task!");
+                }
+            }
+
+            if(request.getTitle()!=null){
+                task.setTitle(request.getTitle());
+            }
+
+            if(request.getDescription()!=null){
+                task.setDescription(request.getDescription());
+            }
+
+            if(request.getStatus()!=null){
+                task.setStatus(request.getStatus());
+            }
+
+            if(request.getDueDate()!=null){
+                task.setDueDate(request.getDueDate());
+            }
+
+            if(isAdminOrManager&&request.getAssignedUserId()!=null){
+                User newAssignee=userRepository.findById(request.getAssignedUserId())
+                .orElseThrow(()->new RuntimeException("User not found!"));
+                task.setAssignedTo(newAssignee);
+            }
+
+            Task updated=taskRepository.save(task);
+            return mapToResponse(updated);
+        }
+ 
 
 }
