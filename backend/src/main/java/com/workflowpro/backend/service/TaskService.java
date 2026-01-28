@@ -21,11 +21,14 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
-    public TaskService(TaskRepository taskRepository,ProjectRepository projectRepository, UserRepository userRepository){
+    public TaskService(TaskRepository taskRepository,ProjectRepository projectRepository, 
+        UserRepository userRepository, NotificationService notificationService){
         this.taskRepository=taskRepository;
         this.projectRepository=projectRepository;
         this.userRepository=userRepository;
+        this.notificationService=notificationService;
     }
 
     public TaskResponse createTask(CreateTaskRequest request){
@@ -48,6 +51,12 @@ public class TaskService {
         task.setStatus(TaskStatus.TODO);
 
         Task saved=taskRepository.save(task);
+
+        if(assignedUser!=null){
+            notificationService.createNotification(assignedUser, 
+                "You have been assigned a new task: "+saved.getTitle());
+        }
+
         return mapToResponse(saved);
     }
 
@@ -100,6 +109,9 @@ public class TaskService {
                 User newAssignee=userRepository.findById(request.getAssignedUserId())
                 .orElseThrow(()->new RuntimeException("User not found!"));
                 task.setAssignedTo(newAssignee);
+
+                notificationService.createNotification(newAssignee,
+                     "You have been assigned to task: "+task.getTitle());
             }
 
             Task updated=taskRepository.save(task);

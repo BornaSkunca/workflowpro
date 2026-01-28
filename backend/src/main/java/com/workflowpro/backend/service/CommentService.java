@@ -20,11 +20,14 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final TaskRepository taskRepository;
+    private final NotificationService notificationService;
 
-    public CommentService(CommentRepository commentRepository, UserRepository userRepository, TaskRepository taskRepository){
+    public CommentService(CommentRepository commentRepository, 
+        UserRepository userRepository, TaskRepository taskRepository,NotificationService notificationService){
         this.commentRepository=commentRepository;
         this.taskRepository=taskRepository;
         this.userRepository=userRepository;
+        this.notificationService=notificationService;
     }
 
     public CommentResponse addComment(Long taskId, CreateCommentRequest request,
@@ -46,6 +49,12 @@ public class CommentService {
             comment.setCreatedAt(LocalDateTime.now());
 
             Comment saved=commentRepository.save(comment);
+
+            User assignee=task.getAssignedTo();
+            if(assignee!=null&&!assignee.getUsername().equals(user.getUsername())){
+                notificationService.createNotification(assignee, 
+                    "New comment on your task '"+task.getTitle()+"' by "+user.getUsername());
+            }
 
             return new CommentResponse(saved.getId(), saved.getContent(), 
             saved.getAuthor().getUsername(), saved.getCreatedAt());
