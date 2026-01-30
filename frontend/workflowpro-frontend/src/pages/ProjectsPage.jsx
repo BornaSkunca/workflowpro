@@ -1,10 +1,12 @@
 import { useState,useEffect } from "react";
 import {fetchProjects, createProject} from "../api/projects";
+import { useNavigate } from "react-router-dom";
 
 export default function ProjectsPage(){
     const [projects,setProjects]=useState([]);
     const [name,setName]=useState("");
     const [description , setDescription]=useState("");
+    const navigate=useNavigate();
 
     const loadProjects=async ()=>{
         const data=await fetchProjects();
@@ -39,7 +41,7 @@ export default function ProjectsPage(){
 
             <ul>
                 {projects.map((p)=>{
-                    <li key={p.id}>
+                    <li key={p.id} onClick={()=>navigate(`/projects/${p.id}`)}>
                         <strong>{p.name}</strong> - {p.description}
                     </li>
                 })}

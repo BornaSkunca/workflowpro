@@ -4,6 +4,7 @@ import LoginPage from "./pages/LoginPage"
 import Dashboard from "./pages/Dashboard"
 import ProtectedRoute from "./components/ProtectedRoute"
 import ProjectsPage from "./pages/ProjectsPage"
+import TasksPage from "./pages/TasksPage"
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           }
         />
         <Route path="/projects" element={<ProtectedRoute><ProjectsPage/></ProtectedRoute>}/>
+        <Route path="/projects/:projectId" element={<ProtectedRoute><TasksPage/></ProtectedRoute>}/>
       </Routes>
     </BrowserRouter>
   );
