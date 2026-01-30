@@ -3,6 +3,7 @@ import { BrowserRouter, Routes ,Route} from 'react-router-dom'
 import LoginPage from "./pages/LoginPage"
 import Dashboard from "./pages/Dashboard"
 import ProtectedRoute from "./components/ProtectedRoute"
+import ProjectsPage from "./pages/ProjectsPage"
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/projects" element={<ProtectedRoute><ProjectsPage/></ProtectedRoute>}/>
       </Routes>
     </BrowserRouter>
   );

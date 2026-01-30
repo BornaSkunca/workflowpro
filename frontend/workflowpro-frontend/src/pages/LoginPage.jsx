@@ -23,9 +23,9 @@ export default function LoginPage(){
             <h2>Login</h2>
             <form onSubmit={handleSubmit}>
                 <input placeholder="Username" value={username} 
-                onChange={(e)=>e.setUsername(e.target.value)} />
+                onChange={(e)=>setUsername(e.target.value)} />
                 <input type="password" placeholder="Password" value={password} 
-                onChange={(e)=>e.setPassword(e.target.value)} />
+                onChange={(e)=>setPassword(e.target.value)} />
                 <button type="submit">Login</button>
             </form>
         </div>
